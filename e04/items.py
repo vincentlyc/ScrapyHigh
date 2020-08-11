@@ -9,4 +9,24 @@ import scrapy
 class E04Item(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    category = scrapy.Field()
+    name = scrapy.Field()
+    jobLink = scrapy.Field()
+    company = scrapy.Field()
+    companyAddress =scrapy.Field()
+    companyLink = scrapy.Field()
+    jobArea= scrapy.Field()
+    experience = scrapy.Field()
+    school = scrapy.Field()
+    descrpition = scrapy.Field()
+    salary = scrapy.Field()
+
+    def toDict(self):
+        return {k:v for k,v in self._values.items()}
+
+    def getList(self):
+        return [v for v in self._values.values()]	
+    
+    def getField(self):
+    return [k for k in self._values.keys()]
+
