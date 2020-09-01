@@ -33,5 +33,24 @@ class e04Spider(scrapy.Spider):
 		for page in range(1,page+1)
 			yield SplashRequest(url+"&page="+st(page), \
 				endpoint='render.html', dont_filter=True)
-
-			
+	 def parse(self,response):
+	 	html = response.text
+	 	keyword = "".join(set([i.lower() if i.isalpha() else i for i in set(re.findall(' <em.*?ht">(.*?)</em>',html))]))
+	 	logging.info(keyword)
+	 	logging.info("into parse function")
+	 	jobs = responese.xpath('//article/div[@class="b-block_left"]')
+	 	logging.info(len(jobs))
+	 	for job in jobs:
+	 		item = E04Item()
+			item['category'] = keyword
+			item['name'] = job.css('a').re('.*get="_blank">(.*?)</a>)[0].replace('<emclass="b-txt--highlight">','').replace('</em>','')
+			item['jobLink'] = "http:"+job.css('a').re('.*href="(.*?)" class=.*')[0]
+			item['company'] = job.xpath('./ul[1]/li/a/@title').get().split(":")[1].replace("\n 公司住址", "")
+			item['companyAddress'] = job.xpath('./ul[1]/li/a/@title').get().split(":")[-1]
+			item['companyLink'] = job.xpath('./ul[1]/li/a/@title').get().split(":")[-1]
+			item['jobArea'] = job.xpath('./ul[2]/li[1]/text()').get()
+			item['experience'] = job.xpath('./ul[2]/li[3]/text()').get()
+			item['school'] = job.xpath('./ul[2]/li[2]/text()').get()
+			item['description'] = job.xpath('./p/text()').get()
+			item['salary'] = job.xpath('./div/span/text()').get()
+			yield item
